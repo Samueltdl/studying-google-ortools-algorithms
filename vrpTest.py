@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 import pandas as pd
-import time
+import time, math
 from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywrapcp
 
@@ -18,10 +18,10 @@ def create_data_model():
         ]
         for x1, y1 in data['locations']
     ]
-    data['num_vehicles'] = 5
+    data['num_vehicles'] = 3
     data['depot'] = 0
     data['demands'] = [0] + [1] * (len(data['locations']) - 1)
-    data['vehicle_capacities'] = [len(data['locations']) // data['num_vehicles']] * data['num_vehicles']
+    data['vehicle_capacities'] = [math.ceil(len(data['locations']) / data['num_vehicles'])] * data['num_vehicles']
     return data
 
 def plot_graph(locations, routes, title):
