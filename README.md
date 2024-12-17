@@ -28,7 +28,7 @@ Instalação:
 ## 3. Estrutura do Código
 O código é organizado em cinco partes principais:
 
-- Geração dos Dados:
+Geração dos Dados:
 
 - Criação das coordenadas de clientes.
 
