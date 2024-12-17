@@ -121,7 +121,7 @@ def solve_vrp(data, first_solution_strategy, metaheuristic):
     search_parameters = pywrapcp.DefaultRoutingSearchParameters()
     search_parameters.first_solution_strategy = first_solution_strategy
     search_parameters.local_search_metaheuristic = metaheuristic
-    search_parameters.time_limit.seconds = 1  # Limite de tempo de execução
+    search_parameters.time_limit.seconds = 5  # Limite de tempo de execução
 
     # Resolver o problema
     start_time = time.time()
