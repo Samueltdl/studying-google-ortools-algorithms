@@ -6,6 +6,20 @@ from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywrapcp
 
 def create_data_model():
+    """
+    Responsável por gerar os dados do problema, incluindo:
+
+        -> Localizações: Coordenadas aleatórias para clientes e o depósito.
+
+        -> Matriz de Distâncias: Calculada usando a distância euclidiana entre as localizações.
+        
+        -> Número de Veículos: Define a quantidade de veículos disponíveis.
+        
+        -> Capacidades dos Veículos: Distribui igualmente a capacidade entre os veículos.
+        
+        -> Demandas: Define a demanda de cada cliente.
+    """
+
     # Coordenadas simuladas (50 clientes)
     import random
     random.seed(42)
@@ -25,6 +39,18 @@ def create_data_model():
     return data
 
 def plot_graph(locations, routes, title):
+    """
+    Responsável por visualizar as rotas em um grafo:
+
+        -> Criação do grafo com NetworkX.
+        
+        -> Adição dos nós (clientes e depósito).
+        
+        -> Desenho das rotas de cada veículo em cores distintas.
+        
+        -> Destaque do depósito com uma cor específica (amarelo).
+    """
+
     G = nx.DiGraph()
     pos = {i: (locations[i][0], locations[i][1]) for i in range(len(locations))}
     colors = ['r', 'g', 'b', 'c', 'm', 'y']  # Cores para os veículos
@@ -50,6 +76,22 @@ def plot_graph(locations, routes, title):
     plt.show()
 
 def solve_vrp(data, first_solution_strategy, metaheuristic):
+    """
+    Esta função configura e resolve o problema utilizando o solver do OR-Tools:
+
+        -> Gerenciamento de Índices: RoutingIndexManager associa índices dos nós do solver com as localizações.
+        
+        -> Callback de Distância: Função que calcula o custo entre dois nós (baseado na matriz de distâncias).
+        
+        -> Callback de Demanda: Retorna a demanda de cada cliente.
+        
+        -> Restrição de Capacidade: Garante que a capacidade de cada veículo não seja ultrapassada.
+        
+        -> Parâmetros de Busca:
+            Estratégias de primeira solução: ex. PATH_CHEAPEST_ARC.
+            Meta-heurísticas: ex. GUIDED_LOCAL_SEARCH, TABU_SEARCH.
+    """
+
     manager = pywrapcp.RoutingIndexManager(len(data['distance_matrix']),
                                            data['num_vehicles'], data['depot'])
     routing = pywrapcp.RoutingModel(manager)
@@ -74,7 +116,6 @@ def solve_vrp(data, first_solution_strategy, metaheuristic):
         True,  # Inicia cumulativo no depósito
         "Capacity"
     )
-
 
     # Configuração de parâmetros
     search_parameters = pywrapcp.DefaultRoutingSearchParameters()
@@ -103,6 +144,18 @@ def solve_vrp(data, first_solution_strategy, metaheuristic):
         return None, None, execution_time
 
 def main():
+    """
+    Executa os experimentos:
+
+        -> Gera os dados do problema.
+        
+        -> Itera por diferentes combinações de estratégias de primeira solução e meta-heurísticas.
+        
+        -> Resolve o problema para cada combinação e visualiza o resultado.
+        
+        -> Salva os resultados em um arquivo CSV.
+    """
+
     data = create_data_model()
     print(data["vehicle_capacities"])
     print(len(data["demands"]))
