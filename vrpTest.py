@@ -157,8 +157,7 @@ def main():
     """
 
     data = create_data_model()
-    print(data["vehicle_capacities"])
-    print(len(data["demands"]))
+
     strategies = {
         "PATH_CHEAPEST_ARC": routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC,
         "PARALLEL_CHEAPEST_INSERTION": routing_enums_pb2.FirstSolutionStrategy.PARALLEL_CHEAPEST_INSERTION,
