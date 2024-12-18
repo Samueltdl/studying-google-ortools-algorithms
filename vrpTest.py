@@ -121,7 +121,7 @@ def solve_vrp(data, first_solution_strategy, metaheuristic):
     search_parameters = pywrapcp.DefaultRoutingSearchParameters()
     search_parameters.first_solution_strategy = first_solution_strategy
     search_parameters.local_search_metaheuristic = metaheuristic
-    search_parameters.time_limit.seconds = 5  # Limite de tempo de execução
+    search_parameters.time_limit.seconds = 1  # Limite de tempo de execução
 
     # Resolver o problema
     start_time = time.time()
@@ -159,15 +159,30 @@ def main():
     data = create_data_model()
 
     strategies = {
+        "AUTOMATIC": routing_enums_pb2.FirstSolutionStrategy.AUTOMATIC,
         "PATH_CHEAPEST_ARC": routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC,
-        "PARALLEL_CHEAPEST_INSERTION": routing_enums_pb2.FirstSolutionStrategy.PARALLEL_CHEAPEST_INSERTION,
+        "PATH_MOST_CONSTRAINED_ARC": routing_enums_pb2.FirstSolutionStrategy.PATH_MOST_CONSTRAINED_ARC,
+        #"EVALUATOR_STRATEGY": routing_enums_pb2.FirstSolutionStrategy.EVALUATOR_STRATEGY,
         "SAVINGS": routing_enums_pb2.FirstSolutionStrategy.SAVINGS,
-        "CHRISTOFIDES": routing_enums_pb2.FirstSolutionStrategy.CHRISTOFIDES
+        #"SWEEP": routing_enums_pb2.FirstSolutionStrategy.SWEEP,
+        "CHRISTOFIDES": routing_enums_pb2.FirstSolutionStrategy.CHRISTOFIDES,
+        #"ALL_UNPERFORMED": routing_enums_pb2.FirstSolutionStrategy.ALL_UNPERFORMED,
+        #"BEST_INSERTION": routing_enums_pb2.FirstSolutionStrategy.BEST_INSERTION,
+        "PARALLEL_CHEAPEST_INSERTION": routing_enums_pb2.FirstSolutionStrategy.PARALLEL_CHEAPEST_INSERTION,
+        "SEQUENTIAL_CHEAPEST_INSERTION": routing_enums_pb2.FirstSolutionStrategy.SEQUENTIAL_CHEAPEST_INSERTION,
+        "LOCAL_CHEAPEST_INSERTION": routing_enums_pb2.FirstSolutionStrategy.LOCAL_CHEAPEST_INSERTION,
+        "LOCAL_CHEAPEST_COST_INSERTION": routing_enums_pb2.FirstSolutionStrategy.LOCAL_CHEAPEST_COST_INSERTION,
+        "GLOBAL_CHEAPEST_ARC": routing_enums_pb2.FirstSolutionStrategy.GLOBAL_CHEAPEST_ARC,
+        "LOCAL_CHEAPEST_ARC": routing_enums_pb2.FirstSolutionStrategy.LOCAL_CHEAPEST_ARC,
+        "FIRST_UNBOUND_MIN_VALUE": routing_enums_pb2.FirstSolutionStrategy.FIRST_UNBOUND_MIN_VALUE
     }
     metaheuristics = {
+        "AUTOMATIC": routing_enums_pb2.LocalSearchMetaheuristic.AUTOMATIC,
+        "GREEDY_DESCENT": routing_enums_pb2.LocalSearchMetaheuristic.GREEDY_DESCENT,
         "GUIDED_LOCAL_SEARCH": routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH,
+        "SIMULATED_ANNEALING": routing_enums_pb2.LocalSearchMetaheuristic.SIMULATED_ANNEALING,
         "TABU_SEARCH": routing_enums_pb2.LocalSearchMetaheuristic.TABU_SEARCH,
-        "SIMULATED_ANNEALING": routing_enums_pb2.LocalSearchMetaheuristic.SIMULATED_ANNEALING
+        "GENERIC_TABU_SEARCH": routing_enums_pb2.LocalSearchMetaheuristic.GENERIC_TABU_SEARCH
     }
 
     results = []
@@ -183,7 +198,7 @@ def main():
                     "Strategy": strategy_name,
                     "Metaheuristic": meta_name,
                     "Distance": distance,
-                    "Execution Time (s)": exec_time
+                    "Execution Time (s)": round(exec_time, 2)
                 })
             else:
                 print(f"Falha para {strategy_name} + {meta_name}")
