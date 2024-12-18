@@ -39,7 +39,7 @@ def create_data_model():
     return data
 
 
-def plot_graph(locations, routes, title, save_path):
+def plot_graph(locations, routes, title, distance_matrix, save_path):
     """
     Responsável por visualizar as rotas em um grafo:
 
@@ -60,12 +60,22 @@ def plot_graph(locations, routes, title, save_path):
     for i in range(len(locations)):
         G.add_node(i)
 
+    # Adicionar arestas com pesos baseados na matriz de distâncias
+    for vehicle_id, route in enumerate(routes):
+        edges = [(route[i], route[i + 1]) for i in range(len(route) - 1)]
+        for edge in edges:
+            G.add_edge(edge[0], edge[1], weight=distance_matrix[edge[0]][edge[1]])
+
     # Desenhar as rotas de cada veículo com cores distintas
     plt.figure(figsize=(10, 8))
     for vehicle_id, route in enumerate(routes):
         edges = [(route[i], route[i + 1]) for i in range(len(route) - 1)]
         nx.draw_networkx_edges(G, pos, edgelist=edges, edge_color=colors[vehicle_id % len(colors)], width=2, alpha=0.7)
         nx.draw_networkx_nodes(G, pos, nodelist=route, node_size=300, node_color=colors[vehicle_id % len(colors)], label=f"Veículo {vehicle_id + 1}")
+
+    # Adicionar rótulos para as arestas (pesos)
+    edge_labels = nx.get_edge_attributes(G, 'weight')
+    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=8, font_color='black')
 
     # Desenhar os rótulos e o depósito (nó inicial/final)
     nx.draw_networkx_labels(G, pos, font_size=10, font_color='black', font_weight="bold")
@@ -207,7 +217,7 @@ def main():
             if routes:
                 title = f"{strategy_name} + {meta_name}\nDistância: {distance}, Tempo: {exec_time:.2f}s"
                 save_path = f"graphs/{strategy_name}_{meta_name}.png"
-                plot_graph(data['locations'], routes, title, save_path=save_path)
+                plot_graph(data['locations'], routes, title, distance_matrix=data["distance_matrix"], save_path=save_path)
                 results.append({
                     "Strategy": strategy_name,
                     "Metaheuristic": meta_name,
