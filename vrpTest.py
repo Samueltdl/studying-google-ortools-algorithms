@@ -38,7 +38,8 @@ def create_data_model():
     data['vehicle_capacities'] = [math.ceil(len(data['locations']) / data['num_vehicles'])] * data['num_vehicles']
     return data
 
-def plot_graph(locations, routes, title):
+
+def plot_graph(locations, routes, title, save_path):
     """
     Responsável por visualizar as rotas em um grafo:
 
@@ -73,7 +74,18 @@ def plot_graph(locations, routes, title):
     # Configurar a legenda e o título
     plt.legend()
     plt.title(title)
-    plt.show()
+
+    if save_path:
+            # Salvar o gráfico no caminho especificado
+            plt.savefig(save_path, format='png')
+            print(f"Gráfico salvo em: {save_path}")
+    else:
+        # Mostrar o gráfico
+        plt.show()
+        
+    # Fechar a figura para evitar sobreposição entre gráficos
+    plt.close()
+
 
 def solve_vrp(data, first_solution_strategy, metaheuristic):
     """
@@ -143,6 +155,7 @@ def solve_vrp(data, first_solution_strategy, metaheuristic):
     else:
         return None, None, execution_time
 
+
 def main():
     """
     Executa os experimentos:
@@ -193,7 +206,8 @@ def main():
             routes, distance, exec_time = solve_vrp(data, strategy, meta)
             if routes:
                 title = f"{strategy_name} + {meta_name}\nDistância: {distance}, Tempo: {exec_time:.2f}s"
-                plot_graph(data['locations'], routes, title)
+                save_path = f"graphs/{strategy_name}_{meta_name}.png"
+                plot_graph(data['locations'], routes, title, save_path=save_path)
                 results.append({
                     "Strategy": strategy_name,
                     "Metaheuristic": meta_name,
@@ -213,6 +227,7 @@ def main():
     df = pd.DataFrame(results)
     print(df)
     df.to_csv("vrp_experiment_results.csv", index=False)
+
 
 if __name__ == '__main__':
     main()
