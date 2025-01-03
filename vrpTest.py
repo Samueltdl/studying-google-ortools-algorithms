@@ -34,8 +34,15 @@ def create_data_model():
     ]
     data['num_vehicles'] = 3
     data['depot'] = 0
-    data['demands'] = [0] + [1] * (len(data['locations']) - 1)
-    data['vehicle_capacities'] = [math.ceil(len(data['locations']) / data['num_vehicles'])] * data['num_vehicles']
+    
+    # Demandas variáveis (exemplo: valores entre 1 e 5 para cada cliente)
+    data['demands'] = [0] + [random.randint(1, 5) for _ in range(len(data['locations']) - 1)]
+    
+    # Ajustar capacidade dos veículos para acomodar as demandas
+    total_demand = sum(data['demands'])
+    average_demand = math.ceil(total_demand / data['num_vehicles'])
+    data['vehicle_capacities'] = [average_demand] * data['num_vehicles']
+    
     return data
 
 
