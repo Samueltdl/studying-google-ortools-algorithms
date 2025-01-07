@@ -20,11 +20,11 @@ def create_data_model():
         -> Demandas: Define a demanda de cada cliente.
     """
 
-    # Coordenadas simuladas (50 clientes)
+    # Coordenadas simuladas
     import random
     random.seed(42)
     data = {}
-    data['locations'] = [(random.randint(0, 100), random.randint(0, 100)) for _ in range(50)]
+    data['locations'] = [(random.randint(0, 200), random.randint(0, 200)) for _ in range(100)]
     data['distance_matrix'] = [
         [
             int(((x1 - x2)**2 + (y1 - y2)**2)**0.5)  # Distância Euclidiana
@@ -38,8 +38,9 @@ def create_data_model():
     # Demandas variáveis (exemplo: valores entre 1 e 5 para cada cliente)
     data['demands'] = [0] + [random.randint(1, 5) for _ in range(len(data['locations']) - 1)]
     
-    # Ajustar capacidade dos veículos para acomodar as demandas
+    # Ajustar capacidade dos veículos para acomodar as demandas (veículos com mesma capacidade)
     total_demand = sum(data['demands'])
+    print(f"Total de demandas -> {total_demand}")
     average_demand = math.ceil(total_demand / data['num_vehicles'])
     data['vehicle_capacities'] = [average_demand] * data['num_vehicles']
     
