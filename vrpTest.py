@@ -24,7 +24,7 @@ def create_data_model():
     import random
     random.seed(42)
     data = {}
-    data['locations'] = [(random.randint(0, 200), random.randint(0, 200)) for _ in range(100)]
+    data['locations'] = [(random.randint(0, 300), random.randint(0, 300)) for _ in range(50)]
     data['distance_matrix'] = [
         [
             int(((x1 - x2)**2 + (y1 - y2)**2)**0.5)  # Distância Euclidiana
@@ -39,8 +39,12 @@ def create_data_model():
     data['demands'] = [0] + [random.randint(1, 5) for _ in range(len(data['locations']) - 1)]
     
     total_demand = sum(data['demands'])
-    print(f"\n\nTotal de demandas -> {total_demand}\n\n")
-    data['vehicle_capacities'] = [140, 100, 42]
+    print(f"\n\nTotal de demandas -> {total_demand}")
+    data['vehicle_capacities'] = [math.ceil(total_demand*0.5), math.ceil(total_demand*0.35), math.ceil(total_demand*0.15)]
+    total_capacity = sum(data['vehicle_capacities'])
+    print(f"\n\nCapacidade total dos veículos -> {total_capacity}\n")
+    for capacity, index in enumerate(data['vehicle_capacities']):
+        print(f"\nCapacidade do veículo {index + 1} -> {capacity}")
 
     # Ajustar capacidade dos veículos para acomodar as demandas (veículos com mesma capacidade)
     # average_demand = math.ceil(total_demand / data['num_vehicles'])
@@ -153,7 +157,7 @@ def solve_vrp(data, first_solution_strategy, metaheuristic):
     search_parameters = pywrapcp.DefaultRoutingSearchParameters()
     search_parameters.first_solution_strategy = first_solution_strategy
     search_parameters.local_search_metaheuristic = metaheuristic
-    search_parameters.time_limit.seconds = 1  # Limite de tempo de execução
+    search_parameters.time_limit.seconds = 5  # Limite de tempo de execução
 
     # Resolver o problema
     start_time = time.time()
