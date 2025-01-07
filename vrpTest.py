@@ -38,16 +38,18 @@ def create_data_model():
     # Demandas variáveis (exemplo: valores entre 1 e 5 para cada cliente)
     data['demands'] = [0] + [random.randint(1, 5) for _ in range(len(data['locations']) - 1)]
     
-    # Ajustar capacidade dos veículos para acomodar as demandas (veículos com mesma capacidade)
     total_demand = sum(data['demands'])
-    print(f"Total de demandas -> {total_demand}")
-    average_demand = math.ceil(total_demand / data['num_vehicles'])
-    data['vehicle_capacities'] = [average_demand] * data['num_vehicles']
+    print(f"\n\nTotal de demandas -> {total_demand}\n\n")
+    data['vehicle_capacities'] = [140, 100, 42]
+
+    # Ajustar capacidade dos veículos para acomodar as demandas (veículos com mesma capacidade)
+    # average_demand = math.ceil(total_demand / data['num_vehicles'])
+    # data['vehicle_capacities'] = [average_demand] * data['num_vehicles']
     
     return data
 
 
-def plot_graph(locations, routes, title, distance_matrix, save_path):
+def plot_graph(locations, routes, title, distance_matrix, save_path, vehicle_capacities):
     """
     Responsável por visualizar as rotas em um grafo:
 
@@ -79,7 +81,7 @@ def plot_graph(locations, routes, title, distance_matrix, save_path):
     for vehicle_id, route in enumerate(routes):
         edges = [(route[i], route[i + 1]) for i in range(len(route) - 1)]
         nx.draw_networkx_edges(G, pos, edgelist=edges, edge_color=colors[vehicle_id % len(colors)], width=2, alpha=0.7)
-        nx.draw_networkx_nodes(G, pos, nodelist=route, node_size=300, node_color=colors[vehicle_id % len(colors)], label=f"Veículo {vehicle_id + 1}")
+        nx.draw_networkx_nodes(G, pos, nodelist=route, node_size=300, node_color=colors[vehicle_id % len(colors)], label=f"Veículo {vehicle_id + 1} ({vehicle_capacities[vehicle_id]})")
 
     # Adicionar rótulos para as arestas (pesos)
     edge_labels = nx.get_edge_attributes(G, 'weight')
@@ -221,7 +223,7 @@ def main():
             if routes:
                 title = f"{strategy_name} + {meta_name}\nDistância: {distance}, Tempo: {exec_time:.2f}s"
                 save_path = f"graphs/{strategy_name}_{meta_name}.png"
-                plot_graph(data['locations'], routes, title, distance_matrix=data["distance_matrix"], save_path=save_path)
+                plot_graph(data['locations'], routes, title, distance_matrix=data["distance_matrix"], save_path=save_path, vehicle_capacities=data['vehicle_capacities'])
                 results.append({
                     "Strategy": strategy_name,
                     "Metaheuristic": meta_name,
