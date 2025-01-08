@@ -24,7 +24,7 @@ def create_data_model():
     import random
     random.seed(42)
     data = {}
-    data['locations'] = [(random.randint(0, 300), random.randint(0, 300)) for _ in range(50)]
+    data['locations'] = [(random.randint(0, 300), random.randint(0, 300)) for _ in range(150)]
     data['distance_matrix'] = [
         [
             int(((x1 - x2)**2 + (y1 - y2)**2)**0.5)  # Distância Euclidiana
@@ -43,9 +43,9 @@ def create_data_model():
     data['vehicle_capacities'] = [math.ceil(total_demand*0.5), math.ceil(total_demand*0.35), math.ceil(total_demand*0.15)]
     total_capacity = sum(data['vehicle_capacities'])
     print(f"\n\nCapacidade total dos veículos -> {total_capacity}\n")
-    for capacity, index in enumerate(data['vehicle_capacities']):
+    for index, capacity in enumerate(data['vehicle_capacities']):
         print(f"\nCapacidade do veículo {index + 1} -> {capacity}")
-
+    print(f"\n\n  ------ INICIANDO TESTES ------ \n\n")
     # Ajustar capacidade dos veículos para acomodar as demandas (veículos com mesma capacidade)
     # average_demand = math.ceil(total_demand / data['num_vehicles'])
     # data['vehicle_capacities'] = [average_demand] * data['num_vehicles']
@@ -81,31 +81,27 @@ def plot_graph(locations, routes, title, distance_matrix, save_path, vehicle_cap
             G.add_edge(edge[0], edge[1], weight=distance_matrix[edge[0]][edge[1]])
 
     # Desenhar as rotas de cada veículo com cores distintas
-    plt.figure(figsize=(10, 8))
+    plt.figure(figsize=(16, 10))
     for vehicle_id, route in enumerate(routes):
         edges = [(route[i], route[i + 1]) for i in range(len(route) - 1)]
         nx.draw_networkx_edges(G, pos, edgelist=edges, edge_color=colors[vehicle_id % len(colors)], width=2, alpha=0.7)
-        nx.draw_networkx_nodes(G, pos, nodelist=route, node_size=300, node_color=colors[vehicle_id % len(colors)], label=f"Veículo {vehicle_id + 1} ({vehicle_capacities[vehicle_id]})")
+        nx.draw_networkx_nodes(G, pos, nodelist=route, node_size=280, node_color=colors[vehicle_id % len(colors)], label=f"Veículo {vehicle_id + 1} ({vehicle_capacities[vehicle_id]})")
 
     # Adicionar rótulos para as arestas (pesos)
     edge_labels = nx.get_edge_attributes(G, 'weight')
-    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=8, font_color='black')
+    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=7, font_color='black')
 
     # Desenhar os rótulos e o depósito (nó inicial/final)
-    nx.draw_networkx_labels(G, pos, font_size=10, font_color='black', font_weight="bold")
-    nx.draw_networkx_nodes(G, pos, nodelist=[0], node_size=500, node_color="yellow", label="Depósito")
+    nx.draw_networkx_labels(G, pos, font_size=8, font_color='black', font_weight="bold")
+    nx.draw_networkx_nodes(G, pos, nodelist=[0], node_size=350, node_color="yellow", label="Depósito")
 
     # Configurar a legenda e o título
     plt.legend()
     plt.title(title)
 
-    if save_path:
-            # Salvar o gráfico no caminho especificado
-            plt.savefig(save_path, format='png')
-            print(f"Gráfico salvo em: {save_path}")
-    else:
-        # Mostrar o gráfico
-        plt.show()
+    # Salvar o gráfico no caminho especificado
+    plt.savefig(save_path, format='png')
+    print(f"Gráfico salvo em: {save_path}")
         
     # Fechar a figura para evitar sobreposição entre gráficos
     plt.close()
