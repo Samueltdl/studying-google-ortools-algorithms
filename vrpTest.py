@@ -174,9 +174,9 @@ def solve_vrp(data, first_solution_strategy, metaheuristic):
                 index = solution.Value(routing.NextVar(index))
             route.append(manager.IndexToNode(index))  # Último nó (depósito)
             routes.append(route)
-        return routes, solution.ObjectiveValue(), execution_time
+        return routes, solution.ObjectiveValue(), execution_time, routing.status()
     else:
-        return None, None, execution_time
+        return None, None, execution_time, routing.status()
 
 
 def main():
@@ -217,29 +217,42 @@ def main():
         "GENERIC_TABU_SEARCH": routing_enums_pb2.LocalSearchMetaheuristic.GENERIC_TABU_SEARCH
     }
 
+    solver_status = {
+        0: "ROUTING_NOT_SOLVED: problema ainda não resolvido.",
+        1:	"ROUTING_SUCCESS: problema resolvido.",
+        2:	"ROUTING_PARTIAL_SUCCESS_LOCAL_OPTIMUM_NOT_REACHED: problema resolvido após chamar RoutingModel.Solve(), exceto pelo fato de que um o ideal não foi atingido. Deixando mais tempo permitiria melhorar a solução.",
+        3:	"ROUTING_FAIL: nenhuma solução foi encontrada para o problema.",
+        4:	"ROUTING_FAIL_TIMEOUT: limite de tempo atingido antes de encontrar uma solução.",
+        5:	"ROUTING_INVALID: modelo, parâmetros do modelo ou sinalizações não são válidos.",
+        6:	"ROUTING_INFEASIBLE: problema comprovadamente inviável."
+    }
+
     results = []
 
     for strategy_name, strategy in strategies.items():
         for meta_name, meta in metaheuristics.items():
-            print(f"Testando: {strategy_name} + {meta_name}")
-            routes, distance, exec_time = solve_vrp(data, strategy, meta)
+            print(f"\nTestando: {strategy_name} + {meta_name}")
+            routes, distance, exec_time, status = solve_vrp(data, strategy, meta)
             if routes:
-                title = f"{strategy_name} + {meta_name}\nDistância: {distance}, Tempo: {exec_time:.2f}s"
+                print(f"Sucesso --> Status: {status}")
+                title = f"{strategy_name} + {meta_name}\nDistância: {distance}, Tempo: {exec_time:.2f}s, Status: {status}"
                 save_path = f"graphs/{strategy_name}_{meta_name}.png"
                 plot_graph(data['locations'], routes, title, distance_matrix=data["distance_matrix"], save_path=save_path, vehicle_capacities=data['vehicle_capacities'])
                 results.append({
                     "Strategy": strategy_name,
                     "Metaheuristic": meta_name,
                     "Distance": distance,
-                    "Execution Time (s)": round(exec_time, 2)
+                    "Execution Time (s)": round(exec_time, 2),
+                    "Solver Status": status
                 })
             else:
-                print(f"Falha para {strategy_name} + {meta_name}")
+                print(f"Falha para {strategy_name} + {meta_name} --> Status: {status}")
                 results.append({
                     "Strategy": strategy_name,
                     "Metaheuristic": meta_name,
                     "Distance": None,
-                    "Execution Time (s)": exec_time
+                    "Execution Time (s)": exec_time,
+                    "Solver Status": status
                 })
 
     # Exportar resultados para uma tabela
