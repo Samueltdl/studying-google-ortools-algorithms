@@ -25,13 +25,16 @@ def create_data_model():
     random.seed(42)
     data = {}
     data['locations'] = [(random.randint(0, 300), random.randint(0, 300)) for _ in range(150)]
+
     data['distance_matrix'] = [
-        [
-            int(((x1 - x2)**2 + (y1 - y2)**2)**0.5)  # Distância Euclidiana
-            for x2, y2 in data['locations']
-        ]
-        for x1, y1 in data['locations']
+    [
+        int(((x1 - x2)**2 + (y1 - y2)**2)**0.5 * random.uniform(0.8, 1.2))  # Adicionando variação
+        if i != j else 0
+        for j, (x2, y2) in enumerate(data['locations'])
     ]
+    for i, (x1, y1) in enumerate(data['locations'])
+    ]
+
     data['num_vehicles'] = 3
     data['depot'] = 0
     
